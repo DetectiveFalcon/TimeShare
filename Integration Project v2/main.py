@@ -6,6 +6,7 @@
 
 
 from datetime import date
+import os
 
 
 def introduction_TimeShare():
@@ -14,8 +15,16 @@ def introduction_TimeShare():
     #var
 
     print("\nTimeShare is a program that will assist you on discovering what time slots work best for your team.")
-    user_name = input("Before we go into further detail, how can we call you?: ")
-
+    
+    #Making sure there is valid input. 
+    validInput = False
+    while validInput == False:
+        user_name = input("Before we go into further detail, how can we call you?: ")
+        if user_name == "": 
+            validInput = False
+        else: 
+            validInput = True
+    
     if user_name:
         #Using the end= parameter pass in the user's name in the prompt
         print("\nThank you ", end=user_name)
@@ -101,15 +110,15 @@ def user_time_management():
         amount_of_meetings = int(input("\nHow many times a week do you have meetings?: "))
 
 
-        # Function that will calculate the final report for the user.
-        calculate_final_time_report(after_before_midday, meeting_hours, meeting_minutes, amount_of_meetings)
+        if (amount_of_meetings is not 0):
+            calculate_final_time_report(after_before_midday, meeting_hours, meeting_minutes, amount_of_meetings, user_name)
 
     else:
         print("Oops! Looks like you did not put a name. Lets try that again.")
         user_time_management()
 
 
-def calculate_final_time_report(after_before_midday, hours, minutes, amount_of_meetings):
+def calculate_final_time_report(after_before_midday, hours, minutes, amount_of_meetings, user_name):
     print("\n=========================== Your Available Time - Without TimeShare ===========================")
     print("It looks like your preference on meetings is in the", after_before_midday)
     print("Total hours available:", hours)
@@ -126,22 +135,22 @@ def calculate_final_time_report(after_before_midday, hours, minutes, amount_of_m
             user_hour_change = int(input("\nWhat would be the amount of hours to remove?: "))
             #Allowing the user to remove hours.
             hours = hours - user_hour_change
-            display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings)
+            display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings, user_name)
 
        elif user_response == "2":
             user_hour_change = int(input("\nWhat would be the amount of hours to add?: "))
             # Allowing the user to add hours.
             hours = hours + user_hour_change
-            display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings)
+            display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings, user_name)
        else:
            # Taking into account bad input, and prompting the user to try again.
            print("\nOoops! That doesn't look like a valid option. Let's try that again...")
 
     else:
-        display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings)
+        display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings, user_name)
 
 
-def display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings):
+def display_final_time_report(after_before_midday, hours, minutes, amount_of_meetings, user_name):
     print("\n=========================== TimeShare's suggestion ===========================")
     print("Based on our calculations and your responses.....")
     print("\nMost of your meetings should be in the " + after_before_midday + ".")
@@ -158,9 +167,47 @@ def display_final_time_report(after_before_midday, hours, minutes, amount_of_mee
     time_shared_minutes = int(hours % minutes ** amount_of_meetings)
     print("\nIn terms of the meeting length in minutes, they should be " + str(time_shared_minutes) + " minutes long.")
 
-    # Adding an ending string that repeats itself 3 times at the end of the output of this function so that it looks better.
-    print("\n==============================================================================" * 2)
+    # Adding an ending string that repeats itself 2 times at the end of the output of this function so that it looks better.
+    for lines in range(2):
+        print("==============================================================================")
+    
+
+    try:
+        print("The file export contains more details as what our suggestions are.")
+        user_response = input(" Would you like to recieve an export of data? (Y/N): ")
+        if(user_response == "Y"):
+             create_final_file_export(time_shared_hours, time_shared_minutes, user_name, hours, minutes)
+        elif(user_response == "N"):
+            print("Thank you for using Time Share.")
+    except: 
+        print("Oops... Lets try that again.")
+
+
+def create_final_file_export(time_shared_hours, time_shared_minutes, user_name, hours, minutes):
+    
+    file_export = open("time_share.txt", "w")
+    file_export.write("Suggested Report for " + str(user_name))    
+    file_export.write("\nSuggest Amount Of Hours To Spend in meetings: " + str(time_shared_hours))
+    file_export.write("\nSuggest Amount Of Minutes To Spend in meetings: " + str(time_shared_minutes))
+    
+    file_export.write("\n================================The minute approach=======================================")
+    if (time_shared_minutes >= 60):
+        file_export.write("\nIt looks like you are still spending more than 60 minutes on meetings. We would suggest on making this meeting a 30 minute meeting.")
+    elif (time_shared_minutes <= 60):
+        file_export.write("\nIt looks like your time spent on meetings is below 60 minutes. That's great!")
+    
+    file_export.write("\n================================The Hour approach=======================================")
+    if (time_shared_hours > 3):
+        file_export.write("\n3 hours a day in meetings sounds like it could be too much. Lets try and hour and 30 minutes.")
+    elif (time_shared_hours < 3):
+        file_export.write("\nSpending less than 3 sounds beneficial for both your workload and efficiency. Great job!")
+    file_export.close() 
+    
+    return print("\nFile has been successfully generated")
+
 
 welcome_TimeShare()
+
+
 
 

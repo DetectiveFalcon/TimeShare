@@ -1,9 +1,10 @@
 """
- Abdiel Diaz == Time_Share
+Time_Share
 
- The purpose of this program is to calculate what
- would be efficient times to meet in a week based on some input."""
+The purpose of this program is to calculate what
+would be efficient times to meet in a week based on some input."""
 
+__author__ = "Abdiel Diaz"
 # TimeShare - Version 1.03
 
 # === Sources ===
